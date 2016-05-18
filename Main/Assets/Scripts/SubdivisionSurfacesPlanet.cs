@@ -4,17 +4,29 @@ using System.Collections.Generic;
 
 public class SubdivisionSurfacesPlanet : MonoBehaviour
 {
-    public int number_of_subdivisions = 6; //each subdivision level yields 4^(n+1) triangles
+    [Tooltip("Number of subdivisions. More subdivisions means more detailed planet but this in turn introduces more chunks. Default is 7")]
+    [Range(5, 8)]
+    public int number_of_subdivisions = 7; //each subdivision level yields 4^(n+1) triangles
+    [Tooltip("Radius of the planet. Default value is 2")]
+    [Range(1.0f, 5.0f)]
     public float planet_radii = 2;
+    [Tooltip("Height of the ocean, should be low. Default is 0.1f")]
+    [Range(0.0f, 0.2f)]
     public float ocean_height = 0.10f;
+    [Tooltip("The lower the value the less mountains you will get and terrain will be smoother")]
+    [Range(1.0f, 10.0f)]
     public float terrain_noise_frequency = 4.0f;
+    [Tooltip("Terrain height multiplier. Default is 0.05")]
+    [Range(0.01f, 0.1f)]
     public float terrain_height = 0.05f;
+    [Tooltip("Adds small randomness to the color")]
+    [Range(0.01f, 0.1f)]
     public float color_randomness = .05f;
 
-    Color ocean_color = new Color(0.0f / 255.0f, 191.0f / 255.0f, 255.0f / 255.0f);
-    Color grass_color = new Color(107.0f / 255.0f, 142.0f / 255.0f, 35.0f / 255.0f);
-    Color highlands_color = new Color(205.0f / 255.0f, 133.0f / 255.0f, 63.0f / 255.0f);
-    Color mountains_color = new Color(255.0f / 255.0f, 250.0f / 255.0f, 255.0f / 255.0f);
+    public Color ocean_color = new Color(0.0f / 255.0f, 191.0f / 255.0f, 255.0f / 255.0f);
+    public Color grass_color = new Color(107.0f / 255.0f, 142.0f / 255.0f, 35.0f / 255.0f);
+    public Color highlands_color = new Color(205.0f / 255.0f, 133.0f / 255.0f, 63.0f / 255.0f);
+    public Color mountains_color = new Color(255.0f / 255.0f, 250.0f / 255.0f, 255.0f / 255.0f);
 
     private List<Vector3> vertices = new List<Vector3>();
     private List<int> indices = new List<int>();
@@ -95,10 +107,6 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
     // Use this for initialization
     void Start () {
 
-
-
-
-
         generate_base_planet();
 
         //generate new triangles
@@ -110,7 +118,7 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
         Color color_lime = new Color(.597f, .597f, 0f);
         Color color_green = new Color(.199f, .398f, 0f);
 
-        Debug.Log("Num of triangles:" + indices.Count/3);
+        //Debug.Log("Num of triangles:" + indices.Count/3);
 
         for (int i = 0; i < indices_new.Length; i+=3) //for each triangle
         {
@@ -175,7 +183,7 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
 
         int num_of_indices = indices.Count;
         int num_of_meshes = (int)Mathf.Ceil(indices.Count/(float)MAX_VERTICES);
-        Debug.Log("Num of meshes: " + num_of_meshes);
+        //Debug.Log("Num of meshes: " + num_of_meshes);
         for(int i = 0; i < num_of_meshes; i++)
         {
             int buffer_size = Mathf.Min(MAX_VERTICES, num_of_indices - MAX_VERTICES * i);
