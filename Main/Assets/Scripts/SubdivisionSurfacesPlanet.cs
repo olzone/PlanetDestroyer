@@ -24,6 +24,8 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
     private float root_six_over_three = Mathf.Sqrt(6) / 3.0f;
     private Vector2 latitude_vector = new Vector2(1, 0);
 
+    private const int MAX_VERTICES = 65001;
+
     /**
         Generates planet using subdivision surfaces method for platonic solids
     */
@@ -92,9 +94,10 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
 
     // Use this for initialization
     void Start () {
-        MeshFilter filter = GetComponent<MeshFilter>();
-        Mesh mesh = new Mesh();
-        filter.mesh = mesh;
+
+
+
+
 
         generate_base_planet();
 
@@ -170,15 +173,61 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
             colors[i + 2] = curr_clr;
         }
 
-        //build mesh
-        mesh.vertices = vertices_new;
-        mesh.triangles = indices_new;
-        mesh.normals = normals;
-        mesh.colors = colors;
+        int num_of_indices = indices.Count;
+        int num_of_meshes = (int)Mathf.Ceil(indices.Count/(float)MAX_VERTICES);
+        Debug.Log("Num of meshes: " + num_of_meshes);
+        for(int i = 0; i < num_of_meshes; i++)
+        {
+            int buffer_size = Mathf.Min(MAX_VERTICES, num_of_indices - MAX_VERTICES * i);
+            Vector3[] vertices_buffer = new Vector3[buffer_size];
+            int[] indices_buffer = new int[buffer_size];
+            Vector3[] normals_buffer = new Vector3[buffer_size];
+            Color[] colors_buffer = new Color[buffer_size];
 
-        SphereCollider _sc = (SphereCollider)gameObject.AddComponent<SphereCollider>();
-        _sc.center = transform.position;
-        _sc.radius = planet_radii;
+
+            for(int j = 0; j < buffer_size; j++)
+            {              
+                indices_buffer[j] = indices_new[j+MAX_VERTICES*i];
+                if (i != 0) indices_buffer[j] = indices_buffer[j] % (MAX_VERTICES * i);
+            }
+
+            System.Array.Copy(vertices_new, MAX_VERTICES * i, vertices_buffer, 0, buffer_size);
+            //System.Array.Copy(indices_new, MAX_VERTICES * i, indices_buffer, 0, buffer_size);
+            System.Array.Copy(normals, MAX_VERTICES * i, normals_buffer, 0, buffer_size);
+            System.Array.Copy(colors, MAX_VERTICES * i, colors_buffer, 0, buffer_size);
+            //Debug.Log("buffer size: " + buffer_size);
+            GameObject obj = new GameObject();
+            obj.name = gameObject.name + i.ToString();
+            MeshFilter _filter = obj.AddComponent<MeshFilter>();
+            MeshRenderer _renderer = obj.AddComponent<MeshRenderer>();
+            SphereCollider _sc = (SphereCollider)obj.AddComponent<SphereCollider>();
+
+            _renderer.material = gameObject.GetComponent<MeshRenderer>().sharedMaterial;
+
+            _sc.center = transform.position;
+            _sc.radius = planet_radii;
+
+            _filter.mesh.vertices = vertices_buffer;
+            _filter.mesh.triangles = indices_buffer;
+            _filter.mesh.normals = normals_buffer;
+            _filter.mesh.colors = colors_buffer;
+            obj.transform.SetParent(gameObject.transform);
+
+        }
+
+        //MeshFilter filter = GetComponent<MeshFilter>();
+        //Mesh mesh = new Mesh();
+        //filter.mesh = mesh;
+
+        //build mesh
+        //mesh.vertices = vertices_new;
+        ////mesh.triangles = indices_new;
+        //mesh.normals = normals;
+        //mesh.colors = colors;
+
+        //SphereCollider _sc = (SphereCollider)gameObject.AddComponent<SphereCollider>();
+        //_sc.center = transform.position;
+        //_sc.radius = planet_radii;
 
     }
 
