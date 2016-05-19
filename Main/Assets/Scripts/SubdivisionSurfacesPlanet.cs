@@ -36,14 +36,19 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
     private float root_six_over_three = Mathf.Sqrt(6) / 3.0f;
     private Vector2 latitude_vector = new Vector2(1, 0);
 
-    private const int MAX_VERTICES = 65001;
+    private const int MAX_VERTICES = 49152; //DON'T CHANGE THAT!
+    private const float HIGHLANDS_HEIGHT = .95f;
+
+    public float get_mountain_height()
+    {
+        return HIGHLANDS_HEIGHT;
+    }
 
     /**
         Generates planet using subdivision surfaces method for platonic solids
     */
     private void generate_base_planet()
     {
-
         Vector3 tetrahedron_top = new Vector3(0, 0, 1);
         Vector3 tetrahedron_bottom1 = new Vector3(0, (float)2.0f * Mathf.Sqrt(2) / 3.0f, negative_one_third);
         Vector3 tetrahedron_bottom2 = new Vector3(-root_six_over_three, negative_root_two_over_three, negative_one_third);
@@ -58,7 +63,6 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
         subdivide(new int[] { 0, 2, 3 }, number_of_subdivisions);
         subdivide(new int[] { 0, 3, 1 }, number_of_subdivisions);
         subdivide(new int[] { 1, 3, 2 }, number_of_subdivisions);
-
     }
 
     /**
@@ -162,7 +166,7 @@ public class SubdivisionSurfacesPlanet : MonoBehaviour
             {
                 curr_clr = grass_color;
             }
-            else if (max_height < 0.95)
+            else if (max_height < HIGHLANDS_HEIGHT)
             {
                 curr_clr = highlands_color;
             }
