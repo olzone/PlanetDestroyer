@@ -86,7 +86,7 @@ public class PlanetLife : MonoBehaviour {
         if (perlin_amplitude > planet.ocean_height && perlin_amplitude < planet.get_mountain_height())
         {
             status = 1;
-            float height_value = (planet.planet_radii + SimplexNoise.simplex3D(cartesian_vector * frequency) * planet.terrain_height - obj.transform.lossyScale.y / 2);
+            float height_value = (planet.planet_radii + SimplexNoise.simplex3D(cartesian_vector * frequency) * planet.terrain_height - obj.transform.lossyScale.y * 1.5f);
             Vector3 position = gameObject.transform.position + height_value * cartesian_vector;
             Quaternion rotation = Quaternion.LookRotation(cartesian_vector);
             rotation *= Quaternion.Euler(90, 0, 0);
