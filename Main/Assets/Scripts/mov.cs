@@ -14,7 +14,7 @@ public class mov : MonoBehaviour {
     private Meshinator mesh;
     // Use this for initialization
     void Start () {
-        mesh = (Meshinator)GameObject.Find("Planet1").GetComponent(typeof(Meshinator));
+        mesh = (Meshinator)GameObject.Find("PlanetMinimal").GetComponent(typeof(Meshinator));
     }
 	
 	// Update is called once per frame

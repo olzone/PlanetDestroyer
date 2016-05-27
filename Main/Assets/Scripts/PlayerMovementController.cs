@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class PlayerMovementController : MonoBehaviour {
 
-    public SubdivisionSurfacesPlanet target;
-    public static List<SubdivisionSurfacesPlanet> targets = null;
+    public MinimalPlanet target;
+    public static List<MinimalPlanet> targets = null;
     public float freeRoamingRotationSpeed;
     public float freeRoamingMovementSpeed;
     public float focusedLinearSpeed;
@@ -20,7 +20,7 @@ public class PlayerMovementController : MonoBehaviour {
 
     void Start()
     {
-        targets = new List<SubdivisionSurfacesPlanet>(Resources.FindObjectsOfTypeAll<SubdivisionSurfacesPlanet>());
+        targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
     }
 
     void Update()
@@ -37,8 +37,8 @@ public class PlayerMovementController : MonoBehaviour {
     private bool updateClosestTarget()
     {
         float currentShortestDistanceSquare = float.MaxValue;
-        SubdivisionSurfacesPlanet selectedTarget = null;
-        foreach (SubdivisionSurfacesPlanet targetCandidate in targets)
+        MinimalPlanet selectedTarget = null;
+        foreach (MinimalPlanet targetCandidate in targets)
         {
             Vector3 offset = targetCandidate.transform.position - transform.position;
             float sqrLen = offset.sqrMagnitude;
