@@ -540,7 +540,7 @@ public class MinimalPlanet : MonoBehaviour {
 
         float frequency = terrain_noise_frequency;
         Vector3 cartesian_vector = geocentric_to_cartesian(longitude, latitude);
-        float perlin_amplitude = SimplexNoise.simplex3D(cartesian_vector * frequency);
+        float perlin_amplitude = get_perlin_amplitude(cartesian_vector, terrain_noise_frequency);
         if (perlin_amplitude > ocean_height && perlin_amplitude < MOUNTAINS_HEIGHT)
         {
             status = true;
