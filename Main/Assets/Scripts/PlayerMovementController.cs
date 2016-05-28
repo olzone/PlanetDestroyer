@@ -10,7 +10,7 @@ public class PlayerMovementController : MonoBehaviour {
     public float focusedLinearSpeed;
     public float angle;
     public float switchControllDistance;
-
+	public bool focus = false;
 
     public AudioClip missileAudio;
     public float missilespeed = 10f;
@@ -25,7 +25,18 @@ public class PlayerMovementController : MonoBehaviour {
 
     void Update()
     {
-        if (updateClosestTarget())
+		if (Input.GetKey(KeyCode.Q)) {
+			focus = false;
+		}
+
+		if (Input.GetKey(KeyCode.R)) {
+			focus = true;
+			updateClosestTarget();
+			Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
+			transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 1);
+		}
+			
+        if (focus)
         {
             movementFocusedOnTarget();
         }
@@ -34,7 +45,7 @@ public class PlayerMovementController : MonoBehaviour {
         }
     }
 
-    private bool updateClosestTarget()
+    private void updateClosestTarget()
     {
         float currentShortestDistanceSquare = float.MaxValue;
         MinimalPlanet selectedTarget = null;
@@ -48,13 +59,8 @@ public class PlayerMovementController : MonoBehaviour {
                 selectedTarget = targetCandidate;
             }
         }
-
-        if (currentShortestDistanceSquare < switchControllDistance * switchControllDistance)
-        {
-            target = selectedTarget;
-            return true;
-        }
-        return false;
+        target = selectedTarget;
+ 
     }
 
     private bool shouldFocusOnTarget()
@@ -64,7 +70,7 @@ public class PlayerMovementController : MonoBehaviour {
 
     private void freeRoamingMovement()
     {
-
+		
         if (Input.GetKey(KeyCode.S))
         {
             transform.Rotate(Vector3.right * freeRoamingRotationSpeed * Time.deltaTime);
@@ -85,56 +91,71 @@ public class PlayerMovementController : MonoBehaviour {
             transform.Rotate(Vector3.down * freeRoamingRotationSpeed * Time.deltaTime);
         }
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             transform.position += transform.forward * freeRoamingMovementSpeed * Time.deltaTime;
         }
 
+		if (Input.GetKey(KeyCode.DownArrow))
+		{
+			transform.position -= transform.forward * freeRoamingMovementSpeed * Time.deltaTime;
+		}
+
     }
 
     private void movementFocusedOnTarget()
-    {
-        Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 1);
+	{
+		bool rot = true;
+		if (Input.GetKey(KeyCode.D)) {
+			transform.RotateAround(target.transform.position,
+				transform.TransformDirection(Vector3.up)
+				, angle * Time.deltaTime);
+			rot = false;
+		}
 
-        if (Input.GetKey(KeyCode.D))
-        {
-            transform.RotateAround(target.transform.position, -target.transform.up, angle * Time.deltaTime);
-        }
+		if (Input.GetKey(KeyCode.A)) {
+			transform.RotateAround(target.transform.position,
+				transform.TransformDirection(Vector3.up)
+				, - angle * Time.deltaTime);
+			rot = false;
+		}
 
-        if (Input.GetKey(KeyCode.A))
-        {
-            transform.RotateAround(target.transform.position, target.transform.up, angle * Time.deltaTime);
-        }
+		if (Input.GetKey(KeyCode.W)) {
+			Debug.Log(transform.forward - (target.transform.position - transform.position));
+			transform.RotateAround(target.transform.position, 
+				transform.TransformDirection(Vector3.right)
+				, angle * Time.deltaTime);
+			rot = false;
+		}
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            transform.RotateAround(target.transform.position, target.transform.right, angle * Time.deltaTime);
-        }
+		if (Input.GetKey(KeyCode.S)) {
+			transform.RotateAround(target.transform.position, 
+				transform.TransformDirection(Vector3.right)
+				,-angle * Time.deltaTime);
+			rot = false;
+		}
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            transform.RotateAround(target.transform.position, -target.transform.right, angle * Time.deltaTime);
-        }
+		if (Input.GetKey(KeyCode.UpArrow)) {
+			transform.position += transform.forward * focusedLinearSpeed * Time.deltaTime;
+		}
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            transform.position += transform.forward * focusedLinearSpeed * Time.deltaTime;
-        }
+		if (Input.GetKey(KeyCode.DownArrow)) {
+			transform.position -= transform.forward * focusedLinearSpeed * Time.deltaTime;
+		}
 
-        if (Input.GetKey(KeyCode.V))
-        {
-            transform.position -= transform.forward * focusedLinearSpeed * Time.deltaTime;
-        }
-
-        if (Input.GetKeyDown(KeyCode.R) && Time.time > nextFire)
+		if (Input.GetKeyDown(KeyCode.Space) && Time.time > nextFire)
         {
             AudioSource.PlayClipAtPoint(missileAudio, transform.position);
 
             nextFire = Time.time + fireRate;
-            GameObject mmissile = (GameObject)Instantiate(missile, transform.position - transform.up * 2, Quaternion.LookRotation(transform.up));
+			GameObject mmissile = (GameObject)Instantiate(missile, transform.position - transform.up * 2, Quaternion.LookRotation(transform.up));
 
             mmissile.GetComponent<Rigidbody>().velocity = transform.forward * missilespeed;
         }
+
+		if (rot) {
+			Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
+			transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 0.2f);
+		}
     }
 }
