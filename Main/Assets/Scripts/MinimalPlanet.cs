@@ -659,6 +659,15 @@ public class MinimalPlanet : MonoBehaviour {
         return new Vector3(x, y, z);
     }
 
+    private void addCore()
+    {
+        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.name = "Core";
+        sphere.transform.localScale = new Vector3(planet_radii, planet_radii, planet_radii);
+        sphere.transform.position = transform.position;
+        sphere.transform.SetParent(gameObject.transform);
+    }
+
     void Start ()
     {
         if (!parameters_correct()) return;
@@ -666,6 +675,7 @@ public class MinimalPlanet : MonoBehaviour {
         load_flora();
         planet_temperature = get_planet_temperature(false);
         Debug.Log("planet temperature " + planet_temperature + "K");
+        addCore();
         subdivision_surfaces_planet();
         create_mesh();
         initialize_orbit();
