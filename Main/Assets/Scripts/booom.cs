@@ -17,8 +17,8 @@ public class booom : MonoBehaviour {
     void OnCollisionEnter(Collision collision)
     { 
         AudioSource.PlayClipAtPoint(explosionAudio, transform.position, 1f);
-        GameObject smokec = (GameObject)Instantiate(smoke, transform.position, Quaternion.identity);
-        Destroy(smokec, 6); 
+        //GameObject smokec = (GameObject)Instantiate(smoke, transform.position, Quaternion.identity);
+        //Destroy(smokec, 6); 
         Destroy(gameObject);
     }
 

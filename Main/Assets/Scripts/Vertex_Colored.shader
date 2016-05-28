@@ -18,6 +18,7 @@ Shader "Custom/Vertex_Colored" {
 	}
 		ColorMaterial AmbientAndDiffuse
 		Lighting On
+		Cull Off
 		SeparateSpecular On
 		SetTexture[_MainTex]{
 		Combine texture * primary, texture * primary

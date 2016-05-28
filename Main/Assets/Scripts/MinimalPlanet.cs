@@ -429,18 +429,19 @@ public class MinimalPlanet : MonoBehaviour {
             obj.name = gameObject.name + i.ToString();
             MeshFilter _filter = obj.AddComponent<MeshFilter>();
             MeshRenderer _renderer = obj.AddComponent<MeshRenderer>();
-            SphereCollider _sc = (SphereCollider)obj.AddComponent<SphereCollider>();
 
             _renderer.material = gameObject.GetComponent<MeshRenderer>().sharedMaterial;
-
-            _sc.center = transform.position;
-            _sc.radius = planet_radii;
 
             _filter.mesh.vertices = vertices_chunks;
             _filter.mesh.triangles = indices_chunks;
             _filter.mesh.normals = normals_chunks;
             _filter.mesh.colors = colors_chunks;
             obj.transform.SetParent(gameObject.transform);
+			
+			var rig = obj.AddComponent<Rigidbody>();
+			rig.isKinematic = true;
+			obj.AddComponent<Meshinator>();
+			obj.AddComponent<MeshCollider>();
         }
     }
 
@@ -536,6 +537,12 @@ public class MinimalPlanet : MonoBehaviour {
     */
     bool place_object_on_planet(GameObject obj, float longitude, float latitude, string name)
     {
+        //Mozna by tez usunac collidery z prefabow, bedzie szybciej
+        foreach (Collider c in obj.GetComponentsInChildren<Collider>())
+        {
+            c.enabled = false;
+        }
+
         bool status = false;
 
         float frequency = terrain_noise_frequency;

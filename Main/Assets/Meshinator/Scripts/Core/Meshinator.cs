@@ -138,18 +138,15 @@ public class Meshinator : MonoBehaviour
 	
 	public void OnCollisionEnter(Collision collision)
 	{
-        Debug.Log("BOOOOOMM!!!");
         m_CollisionCount++;
 
-		if (m_ClearedForCollisions && collision.impactForceSum.magnitude >= m_ForceResistance)
+		if (m_ClearedForCollisions)
 		{
 			// Find the impact point
 			foreach (ContactPoint contact in collision.contacts)
 			{
 				if (contact.otherCollider == collision.collider)
 				{
-                    Debug.Log("MEGAAAAAAAABOOOOOMM!!!");
-                    Debug.Log(collision.impactForceSum);
                     Impact(contact.point, collision.impactForceSum, m_ImpactShape, m_ImpactType);
 					break;
 				}
@@ -178,14 +175,8 @@ public class Meshinator : MonoBehaviour
 		
 		// Set up m_Hull
 		InitializeHull();
-
-		// Figure out the true impact force
-		if (force.magnitude > m_MaxForcePerImpact)
-			force = force.normalized * m_MaxForcePerImpact;
-		float impactFactor = (force.magnitude - m_ForceResistance) * m_ForceMultiplier;
-
-		if (impactFactor <= 0)
-			return;
+		
+		float impactFactor = 0.25f;
 
 		// Localize the point and the force to account for transform scaling (and maybe rotation or translation)
 		Vector3 impactPoint = transform.InverseTransformPoint(point);
@@ -220,8 +211,8 @@ public class Meshinator : MonoBehaviour
 					meshFilter.mesh = null;
 				MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
 
-     //           if (meshCollider != null)
-					//meshCollider.mesh = null;
+                if (meshCollider != null)
+					meshCollider.sharedMesh = null;
 				
 				// Get the newly-adjusted Mesh so we can work with it
 				Mesh newMesh = m_Hull.GetMesh();
@@ -232,8 +223,8 @@ public class Meshinator : MonoBehaviour
 					meshFilter.mesh = newMesh;
 				
 				// If this GameObject has a MeshCollider, put the new mesh there too
-				//if (meshCollider != null)
-				//	meshCollider.mesh = newMesh;
+				if (meshCollider != null)
+					meshCollider.sharedMesh = newMesh;
 				
 				// Drop our cached Hull if we're not supposed to keep it around
 				if (m_CacheOption == CacheOptions.None)

@@ -14,7 +14,6 @@ public class mov : MonoBehaviour {
     private Meshinator mesh;
     // Use this for initialization
     void Start () {
-        mesh = (Meshinator)GameObject.Find("PlanetMinimal").GetComponent(typeof(Meshinator));
     }
 	
 	// Update is called once per frame
@@ -59,10 +58,6 @@ public class mov : MonoBehaviour {
         {
             Rigidbody mmissile = (Rigidbody)Instantiate(missile, transform.position, transform.rotation);
             mmissile.velocity = transform.forward * missilespeed;
-
-            //Debug.Log("Mykkkkkkkkk");
-            //SubdivisionSurfacesPlanet planet = (SubdivisionSurfacesPlanet)GameObject.Find("CreatedCube").GetComponent(typeof(SubdivisionSurfacesPlanet));
-            //planet.ReColor();
         }
 
         int forceMult = 2000;
@@ -74,13 +69,6 @@ public class mov : MonoBehaviour {
             GameObject mmissile = (GameObject)Instantiate(missile, transform.position - transform.up * 2, transform.rotation * Quaternion.LookRotation(transform.up));
 
             mmissile.GetComponent<Rigidbody>().velocity = transform.forward * missilespeed;
-
-            //Debug.Log("Jeb");
-            //mesh.Impact(transform.position, forceMult * new Vector3(0, 0, 1), Meshinator.ImpactShapes.SphericalImpact, Meshinator.ImpactTypes.Compression);
-            
-            //mesh.Impact(transform.position, forceMult * new Vector3(0, 0, 1), Meshinator.ImpactShapes.FlatImpact, Meshinator.ImpactTypes.Compression);
-            //mesh.Impact(transform.position, forceMult * new Vector3(0, 0, 1), Meshinator.ImpactShapes.SphericalImpact, Meshinator.ImpactTypes.Fracture);
-            //mesh.Impact(transform.position, forceMult * new Vector3(0, 0, 1), Meshinator.ImpactShapes.FlatImpact, Meshinator.ImpactTypes.Fracture);
         }
     }
 }
