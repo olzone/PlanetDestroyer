@@ -50,6 +50,7 @@
      <Compile Include="Assets\Meshinator\Scripts\Core\Meshinator.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Utility\Camera\MainCamera.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Utility\Multithreading\ThreadManager.cs" />
+     <Compile Include="Assets\Player.cs" />
      <Compile Include="Assets\Scripts\MinimalPlanet.cs" />
      <Compile Include="Assets\Scripts\PlayerMovementController.cs" />
      <Compile Include="Assets\Scripts\Prewarm.cs" />

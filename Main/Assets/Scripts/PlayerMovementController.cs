@@ -18,14 +18,30 @@ public class PlayerMovementController : MonoBehaviour {
     private float nextFire = 0.0F;
     public GameObject missile;
 
+    public GameObject sun;
+
+    public float sunDemageR = 15f;
+    public float sunKillR = 6f;
+
+    private Player player = null;
+
     void Start()
     {
         targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
+        player = GetComponent<Player>();
     }
 
     void Update()
     {
-		if (Input.GetKey(KeyCode.Q)) {
+        //Debug.Log(Vector3.Distance(transform.position, sun.transform.position));
+        if (Vector3.Distance(transform.position, sun.transform.position) <= sunDemageR)
+            player.TakeDamage(1);
+
+        if (Vector3.Distance(transform.position, sun.transform.position) <= sunKillR)
+            player.Death();
+
+
+        if (Input.GetKey(KeyCode.Q)) {
 			focus = false;
 		}
 
@@ -70,7 +86,12 @@ public class PlayerMovementController : MonoBehaviour {
 
     private void freeRoamingMovement()
     {
-		
+//      if(Input.GetKey(KeyCode.Space))
+  //      {
+  //          GetComponent<Player>().TakeDamage(1);
+  //      }
+
+
         if (Input.GetKey(KeyCode.S))
         {
             transform.Rotate(Vector3.right * freeRoamingRotationSpeed * Time.deltaTime);
