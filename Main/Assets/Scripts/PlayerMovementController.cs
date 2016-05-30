@@ -39,10 +39,12 @@ public class PlayerMovementController : MonoBehaviour {
 
         if (Input.GetKey(KeyCode.Q)) {
 			focus = false;
+			transform.parent = null;
 		}
 
 		if (Input.GetKey(KeyCode.R)) {
 			focus = true;
+			transform.parent = selectedTarget.transform;
 //			updateClosestTarget();
 			Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
 			transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 1);
@@ -84,6 +86,9 @@ public class PlayerMovementController : MonoBehaviour {
                 selectedTarget = targetCandidate;
             }
         }
+		if (target != selectedTarget && focus) {
+			transform.parent = selectedTarget.transform;
+		}
         target = selectedTarget;
  
     }
