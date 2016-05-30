@@ -147,6 +147,7 @@ public class Meshinator : MonoBehaviour
 			{
 				if (contact.otherCollider == collision.collider)
 				{
+                    Debug.Log("CP:" + contact.point);
                     Impact(contact.point, collision.impactForceSum, m_ImpactShape, m_ImpactType);
 					break;
 				}
@@ -172,7 +173,7 @@ public class Meshinator : MonoBehaviour
 	public void Impact(Vector3 point, Vector3 force, ImpactShapes impactShape, ImpactTypes impactType)
 	{
         m_Calculating = true;
-		
+
 		// Set up m_Hull
 		InitializeHull();
 		
@@ -181,9 +182,20 @@ public class Meshinator : MonoBehaviour
 		// Localize the point and the force to account for transform scaling (and maybe rotation or translation)
 		Vector3 impactPoint = transform.InverseTransformPoint(point);
 		Vector3 impactForce = transform.InverseTransformDirection(force.normalized) * impactFactor;
-		
-		// Limit the force by the extents of the initial bounds to keep things reasonable
-		float impactForceX = Mathf.Max(Mathf.Min(impactForce.x, m_InitialBounds.extents.x), -m_InitialBounds.extents.x);
+
+
+        foreach (Transform child in transform.root)
+        {
+            if (child.name.StartsWith("Tree") && Vector3.Distance(point, child.position) <= 1)
+            {
+                Debug.Log(child.name);
+                Destroy(child.gameObject);
+            }
+        }
+
+
+        // Limit the force by the extents of the initial bounds to keep things reasonable
+        float impactForceX = Mathf.Max(Mathf.Min(impactForce.x, m_InitialBounds.extents.x), -m_InitialBounds.extents.x);
 		float impactForceY = Mathf.Max(Mathf.Min(impactForce.y, m_InitialBounds.extents.y), -m_InitialBounds.extents.y);
 		float impactForceZ = Mathf.Max(Mathf.Min(impactForce.z, m_InitialBounds.extents.z), -m_InitialBounds.extents.z);
 		impactForce = new Vector3(impactForceX, impactForceY, impactForceZ);

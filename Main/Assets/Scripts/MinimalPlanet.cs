@@ -133,6 +133,8 @@ public class MinimalPlanet : MonoBehaviour {
     private const float HOT_BARRIER = 353.15f; //it is too hot for life above this point
     private const float VARIATION_HALF_RANGE = 25.0f;
 
+    private float lowest_point = float.MaxValue;
+
     //Polygon colors based on height
     private TemperatureGradient[] water_gradients_colors =
     {
@@ -375,6 +377,9 @@ public class MinimalPlanet : MonoBehaviour {
 
             //assign color based on terrain height
             float max_height = Mathf.Max(Mathf.Max(ampl1, ampl2), ampl3); //using max function for determining triangle height based on its vertices
+
+            lowest_point = Mathf.Min(lowest_point, Mathf.Min(Mathf.Min(ampl1, ampl2), ampl3));
+
             Color curr_clr = new Color(0.0f, 0.0f, 0.0f);
             if (max_height <= ocean_height)
             {
@@ -661,11 +666,15 @@ public class MinimalPlanet : MonoBehaviour {
 
     private void addCore()
     {
+        Debug.Log("LP: " + (planet_radii - 1.8f * terrain_height));
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphere.AddComponent<Rigidbody>().isKinematic = true;
         sphere.name = "Core";
-        sphere.transform.localScale = new Vector3(planet_radii, planet_radii, planet_radii);
+        sphere.transform.localScale = new Vector3(2*(planet_radii - 1.8f * terrain_height), 2 * (planet_radii - 1.8f * terrain_height), 2 * (planet_radii - 1.8f * terrain_height));
         sphere.transform.position = transform.position;
         sphere.transform.SetParent(gameObject.transform);
+        sphere.AddComponent<Meshinator>();
+        //sphere.AddComponent<MeshCollider>();
     }
 
     void Start ()
@@ -675,9 +684,9 @@ public class MinimalPlanet : MonoBehaviour {
         load_flora();
         planet_temperature = get_planet_temperature(false);
         Debug.Log("planet temperature " + planet_temperature + "K");
-        addCore();
         subdivision_surfaces_planet();
         create_mesh();
+        addCore();
         initialize_orbit();
         if(flora_enabled) populate_planet();
     }

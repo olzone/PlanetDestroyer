@@ -24,6 +24,8 @@ public class PlayerMovementController : MonoBehaviour {
     public float sunKillR = 6f;
 
     private Player player = null;
+    float currentShortestDistanceSquare = float.MaxValue;
+    MinimalPlanet selectedTarget = null;
 
     void Start()
     {
@@ -34,12 +36,6 @@ public class PlayerMovementController : MonoBehaviour {
     void Update()
     {
         //Debug.Log(Vector3.Distance(transform.position, sun.transform.position));
-        if (Vector3.Distance(transform.position, sun.transform.position) <= sunDemageR)
-            player.TakeDamage(1);
-
-        if (Vector3.Distance(transform.position, sun.transform.position) <= sunKillR)
-            player.Death();
-
 
         if (Input.GetKey(KeyCode.Q)) {
 			focus = false;
@@ -47,7 +43,7 @@ public class PlayerMovementController : MonoBehaviour {
 
 		if (Input.GetKey(KeyCode.R)) {
 			focus = true;
-			updateClosestTarget();
+//			updateClosestTarget();
 			Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
 			transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 1);
 		}
@@ -59,12 +55,25 @@ public class PlayerMovementController : MonoBehaviour {
         else {
             freeRoamingMovement();
         }
+
+
+        updateClosestTarget();
+
+        if (Vector3.Distance(transform.position, sun.transform.position) <= sunDemageR)
+            player.TakeDamage(1);
+
+        if (currentShortestDistanceSquare <= 20 * selectedTarget.planet_radii)
+            player.TakeDamage(0);
+
+        if (Vector3.Distance(transform.position, sun.transform.position) <= sunKillR || currentShortestDistanceSquare <= 5 * selectedTarget.planet_radii)
+            player.Death();
     }
 
     private void updateClosestTarget()
     {
-        float currentShortestDistanceSquare = float.MaxValue;
-        MinimalPlanet selectedTarget = null;
+        //        float currentShortestDistanceSquare = float.MaxValue;
+        //        MinimalPlanet selectedTarget = null;
+        currentShortestDistanceSquare = float.MaxValue;
         foreach (MinimalPlanet targetCandidate in targets)
         {
             Vector3 offset = targetCandidate.transform.position - transform.position;
