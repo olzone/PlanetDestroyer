@@ -51,10 +51,13 @@
      <Compile Include="Assets\Meshinator\Scripts\Utility\Camera\MainCamera.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Utility\Multithreading\ThreadManager.cs" />
      <Compile Include="Assets\Player.cs" />
+     <Compile Include="Assets\Scripts\MainMenuPlanet.cs" />
      <Compile Include="Assets\Scripts\MinimalPlanet.cs" />
      <Compile Include="Assets\Scripts\PlayerMovementController.cs" />
      <Compile Include="Assets\Scripts\Prewarm.cs" />
+     <Compile Include="Assets\Scripts\QuitGameScript.cs" />
      <Compile Include="Assets\Scripts\SimplexNoise.cs" />
+     <Compile Include="Assets\Scripts\StartNewGameScript.cs" />
      <Compile Include="Assets\Scripts\booom.cs" />
      <Compile Include="Assets\Scripts\mov.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
