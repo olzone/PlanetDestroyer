@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\EnemyAI.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Core\HelperScripts\Hull.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Core\HelperScripts\SubHull.cs" />
      <Compile Include="Assets\Meshinator\Scripts\Core\Meshinator.cs" />

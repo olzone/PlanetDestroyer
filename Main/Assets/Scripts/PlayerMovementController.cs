@@ -27,6 +27,8 @@ public class PlayerMovementController : MonoBehaviour {
     float currentShortestDistanceSquare = float.MaxValue;
     MinimalPlanet selectedTarget = null;
 
+    public GameObject front;
+
     void Start()
     {
         targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
@@ -61,13 +63,13 @@ public class PlayerMovementController : MonoBehaviour {
 
         updateClosestTarget();
 
-        if (Vector3.Distance(transform.position, sun.transform.position) <= sunDemageR)
+        if (Vector3.Distance(front.transform.position, sun.transform.position) <= sunDemageR)
             player.TakeDamage(1);
 
         if (currentShortestDistanceSquare <= 20 * selectedTarget.planet_radii)
             player.TakeDamage(0);
 
-        if (Vector3.Distance(transform.position, sun.transform.position) <= sunKillR || currentShortestDistanceSquare <= 5 * selectedTarget.planet_radii)
+        if (Vector3.Distance(front.transform.position, sun.transform.position) <= sunKillR || currentShortestDistanceSquare <= 5 * selectedTarget.planet_radii)
             player.Death();
     }
 
@@ -78,7 +80,7 @@ public class PlayerMovementController : MonoBehaviour {
         currentShortestDistanceSquare = float.MaxValue;
         foreach (MinimalPlanet targetCandidate in targets)
         {
-            Vector3 offset = targetCandidate.transform.position - transform.position;
+            Vector3 offset = targetCandidate.transform.position - front.transform.position;
             float sqrLen = offset.sqrMagnitude;
             if (currentShortestDistanceSquare > sqrLen)
             {
