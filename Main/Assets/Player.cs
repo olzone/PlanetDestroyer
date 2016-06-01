@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using VolumetricLines;
 
 public class Player : MonoBehaviour
 {
@@ -24,6 +25,18 @@ public class Player : MonoBehaviour
     PlayerMovementController playerMovement = null;
 
     AudioSource playerAudio;
+
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.transform.root.GetComponent<VolumetricLineBehavior>().m_lineColor != Color.red)
+            TakeDamage(5);
+        //Debug.Log("xxxxxxxxxxxxxxxxxxxxxx");
+        //foreach (ContactPoint contact in collision.contacts)
+        //{
+        //   Debug.DrawRay(contact.point, contact.normal, Color.white);
+        //}
+
+    }
 
     // Use this for initialization
     void Start()

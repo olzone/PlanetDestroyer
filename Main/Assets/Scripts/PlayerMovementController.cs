@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using VolumetricLines;
 
 public class PlayerMovementController : MonoBehaviour {
 
@@ -14,9 +15,16 @@ public class PlayerMovementController : MonoBehaviour {
 
     public AudioClip missileAudio;
     public float missilespeed = 10f;
+    public float laserspeed = 30f;
     public float fireRate = 2.0F;
+    public float laserFireRate = 0.5F;
     private float nextFire = 0.0F;
+    private float laserNextFire = 0.0F;
     public GameObject missile;
+    public GameObject laser;
+
+    public GameObject leftIns;
+    public GameObject rightIns;
 
     public GameObject sun;
 
@@ -102,10 +110,20 @@ public class PlayerMovementController : MonoBehaviour {
 
     private void freeRoamingMovement()
     {
-//      if(Input.GetKey(KeyCode.Space))
-  //      {
-  //          GetComponent<Player>().TakeDamage(1);
-  //      }
+      if(Input.GetKey(KeyCode.Space) && Time.time > laserNextFire)
+        {
+            //AudioSource.PlayClipAtPoint(missileAudio, transform.position);
+
+            laserNextFire = Time.time + laserFireRate;
+            GameObject laser_tmp = (GameObject)Instantiate(laser, leftIns.transform.position, Quaternion.LookRotation(transform.forward));
+            GameObject laser_tmp2 = (GameObject)Instantiate(laser, rightIns.transform.position, Quaternion.LookRotation(transform.forward));
+            laser_tmp.GetComponent<VolumetricLineBehavior>().m_lineColor = Color.red;
+            laser_tmp2.GetComponent<VolumetricLineBehavior>().m_lineColor = Color.red;
+            laser_tmp.GetComponent<Rigidbody>().velocity = transform.forward * laserspeed;
+            laser_tmp2.GetComponent<Rigidbody>().velocity = transform.forward * laserspeed;
+
+            //GetComponent<Player>().TakeDamage(1);
+        }
 
 
         if (Input.GetKey(KeyCode.S))
