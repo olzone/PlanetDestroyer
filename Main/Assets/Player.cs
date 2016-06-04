@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public Image damageImage;                                   // Reference to an image to flash on the screen on being hurt.
     public Image deathImage;
     public Text deathTxt;
+    public Text winTxt;
     public AudioClip deathClip;                                 // The audio clip to play when the player dies.
     public float flashSpeed = 5f;                               // The speed the damageImage will fade at.
     public Color flashColour = new Color(1f, 0f, 0f, 1f);     // The colour the damageImage is set to, to flash.
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
-        if (collision.transform.root.GetComponent<VolumetricLineBehavior>().m_lineColor != Color.red)
+        if (collision.name.StartsWith("VolumetricLinePrefab") && collision.transform.root.GetComponent<VolumetricLineBehavior>().m_lineColor != Color.red)
             TakeDamage(5);
         //Debug.Log("xxxxxxxxxxxxxxxxxxxxxx");
         //foreach (ContactPoint contact in collision.contacts)
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         deathTxt.enabled = false;
+        winTxt.enabled = false;
         // Set the initial health of the player.
         currentHealth = startingHealth;
         playerMovement = GetComponent<PlayerMovementController>();
@@ -125,5 +127,10 @@ public class Player : MonoBehaviour
         // Turn off the movement and shooting scripts.
         playerMovement.enabled = false;
         //playerShooting.enabled = false;
+    }
+
+    public void Win()
+    {
+        winTxt.enabled = true;
     }
 }

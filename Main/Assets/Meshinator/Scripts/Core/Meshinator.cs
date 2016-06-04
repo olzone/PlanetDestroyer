@@ -98,7 +98,7 @@ public class Meshinator : MonoBehaviour
 	
 	public void Start()
 	{
-		if (m_CacheOption == CacheOptions.CacheOnLoad)
+		//if (m_CacheOption == CacheOptions.CacheOnLoad)
 		{
 			// Make sure we have a MeshFilter
 			MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
@@ -172,87 +172,173 @@ public class Meshinator : MonoBehaviour
 
 	public void Impact(Vector3 point, Vector3 force, ImpactShapes impactShape, ImpactTypes impactType)
 	{
-        m_Calculating = true;
-
-		// Set up m_Hull
-		InitializeHull();
-		
-		float impactFactor = 0.25f;
-
-		// Localize the point and the force to account for transform scaling (and maybe rotation or translation)
-		Vector3 impactPoint = transform.InverseTransformPoint(point);
-		Vector3 impactForce = transform.InverseTransformDirection(force.normalized) * impactFactor;
-
-
-        foreach (Transform child in transform.root)
+        try
         {
-            if (child.name.StartsWith("Tree") && Vector3.Distance(point, child.position) <= 1)
+            var isCoore = transform.name.StartsWith("core");
+
+            m_Calculating = true;
+
+            // Set up m_Hull
+            InitializeHull();
+
+            float impactFactor = 0.25f;
+
+            if (isCoore)
             {
-                Debug.Log(child.name);
-                Destroy(child.gameObject);
+                impactFactor = 0.10f;
+                impactType = ImpactTypes.Fracture;
             }
-        }
+
+            transform.root.GetComponent<life>().Dmg(impactFactor);
+            //float impactFactor = 1f;
+
+            // Localize the point and the force to account for transform scaling (and maybe rotation or translation)
+            Vector3 impactPoint = transform.InverseTransformPoint(point);
+            Vector3 impactForce = transform.InverseTransformDirection(force.normalized) * impactFactor;
 
 
-        // Limit the force by the extents of the initial bounds to keep things reasonable
-        float impactForceX = Mathf.Max(Mathf.Min(impactForce.x, m_InitialBounds.extents.x), -m_InitialBounds.extents.x);
-		float impactForceY = Mathf.Max(Mathf.Min(impactForce.y, m_InitialBounds.extents.y), -m_InitialBounds.extents.y);
-		float impactForceZ = Mathf.Max(Mathf.Min(impactForce.z, m_InitialBounds.extents.z), -m_InitialBounds.extents.z);
-		impactForce = new Vector3(impactForceX, impactForceY, impactForceZ);
 
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+            foreach (Transform child in transform.root)
+            {
+                if (child.name.StartsWith("Tree"))
+                {
+                    Debug.Log(child.name);
+                    Destroy(child.gameObject);
+                }
+            }
 
-        //Debug.Log(mesh.vertices.Length);
-        //Debug.Log(mesh.triangles.Length);
-        //Debug.Log(mesh.normals.Length);
-        //Debug.Log(mesh.colors.Length);
-        //Debug.Log("xxxxxxxxxxxxxxxxxx");
 
-        // Run the mesh deformation on another thread
-        ThreadManager.RunAsync(()=>
-		{
-			// Do all the math to deform this mesh
-			m_Hull.Impact(impactPoint, impactForce, impactShape, impactType);
-			
-			// Queue the final mesh setting on the main thread once the deformations are done
-			ThreadManager.QueueOnMainThread(()=>
-			{
-				// Clear out the current Mesh and MeshCollider (if we have one) for now
-				MeshFilter meshFilter = gameObject.GetComponent<MeshFilter>();
-				if (meshFilter != null)
-					meshFilter.mesh = null;
-				MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
+            // Limit the force by the extents of the initial bounds to keep things reasonable
+            float impactForceX = Mathf.Max(Mathf.Min(impactForce.x, m_InitialBounds.extents.x), -m_InitialBounds.extents.x);
+            float impactForceY = Mathf.Max(Mathf.Min(impactForce.y, m_InitialBounds.extents.y), -m_InitialBounds.extents.y);
+            float impactForceZ = Mathf.Max(Mathf.Min(impactForce.z, m_InitialBounds.extents.z), -m_InitialBounds.extents.z);
+            impactForce = new Vector3(impactForceX, impactForceY, impactForceZ);
 
-                if (meshCollider != null)
-					meshCollider.sharedMesh = null;
-				
-				// Get the newly-adjusted Mesh so we can work with it
-				Mesh newMesh = m_Hull.GetMesh();
-				
+            Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
 
-				// Set the hull's new mesh back onto this game object
-				if (meshFilter != null)
-					meshFilter.mesh = newMesh;
-				
-				// If this GameObject has a MeshCollider, put the new mesh there too
-				if (meshCollider != null)
-					meshCollider.sharedMesh = newMesh;
-				
-				// Drop our cached Hull if we're not supposed to keep it around
-				if (m_CacheOption == CacheOptions.None)
-					m_Hull = null;
-				
-				// Our calculations are done
-				m_Calculating = false;
+            //Debug.Log(mesh.vertices.Length);
+            //Debug.Log(mesh.triangles.Length);
+            //Debug.Log(mesh.normals.Length);
+            //Debug.Log(mesh.colors.Length);
+            //Debug.Log("xxxxxxxxxxxxxxxxxx");
 
-                mesh = gameObject.GetComponent<MeshFilter>().mesh;
+            // Run the mesh deformation on another thread
+            ThreadManager.RunAsync(() =>
+            {
+                // Do all the math to deform this mesh
+                m_Hull.Impact(impactPoint, impactForce, impactShape, impactType);
 
-                //Debug.Log(mesh.vertices.Length);
-                //Debug.Log(mesh.triangles.Length);
-                //Debug.Log(mesh.normals.Length);
-                //Debug.Log(mesh.colors.Length);
+                // Queue the final mesh setting on the main thread once the deformations are done
+                ThreadManager.QueueOnMainThread(() =>
+                {
+                    // Clear out the current Mesh and MeshCollider (if we have one) for now
+                    MeshFilter meshFilter;
+                    MeshCollider meshCollider;
+                    try
+                    {
+                        meshFilter = gameObject.GetComponent<MeshFilter>();
+                        if (meshFilter != null)
+                            meshFilter.mesh = null;
+                        meshCollider = gameObject.GetComponent<MeshCollider>();
+                        if (meshCollider != null)
+                            meshCollider.sharedMesh = null;
+                    }
+                    catch
+                    {
+                        return;
+                    }
+
+
+                    // Get the newly-adjusted Mesh so we can work with it
+
+                    Mesh newMesh = m_Hull.GetMesh();
+
+                    /*
+                    if (impactType == ImpactTypes.Fracture)
+                    {
+                        Mesh subHullMesh = m_Hull.GetSubHullMesh();
+                        if (subHullMesh != null)
+                        {
+                            // Create the new GameObject
+                            GameObject newGO = (GameObject)GameObject.Instantiate(gameObject);
+
+                            // Set the new Mesh onto the MeshFilter and MeshCollider
+                            MeshFilter newMeshFilter = newGO.GetComponent<MeshFilter>();
+                            MeshCollider newMeshCollider = newGO.GetComponent<MeshCollider>();
+                            if (newMeshFilter != null)
+                                newMeshFilter.mesh = subHullMesh;
+
+                            //if (newMeshCollider != null)
+                              //  newMeshCollider.sharedMesh = subHullMesh;
+
+                            // If using convex MeshColliders, it's possible for colliders to overlap right after a
+                            // fracture, which causes exponentially more fractures... So, right after a fracture,
+                            // temporarily disable impacts to both the old GameObject, and the new one we just created
+                            //DelayCollisions();
+                            Meshinator subHullMeshinator = newGO.GetComponent<Meshinator>();
+                            if (subHullMeshinator != null)
+                                subHullMeshinator.DelayCollisions();
+
+                            // Figure out the approximate volume of our Hull and SubHull meshes. This
+                            // will be used to calculate the rigidbody masses (if a rigidbodies are present)
+                            // for the old and new GameObjects.
+                            if (GetComponent<Rigidbody>() != null && newGO.GetComponent<Rigidbody>() != null)
+                            {
+                                Vector3 hullSize = newMesh.bounds.size;
+                                float hullVolume = hullSize.x * hullSize.y * hullSize.z;
+
+                                Vector3 subHullSize = subHullMesh.bounds.size;
+                                float subHullVolume = subHullSize.x * subHullSize.y * subHullSize.z;
+
+                                float totalVolume = hullVolume + subHullVolume;
+                                float totalMass = GetComponent<Rigidbody>().mass;
+
+                                GetComponent<Rigidbody>().mass = totalMass * (hullVolume / totalVolume);
+                                newGO.GetComponent<Rigidbody>().mass = totalMass * (subHullVolume / totalVolume);
+
+                                // Set the old velocity onto the new GameObject's rigidbody
+                                newGO.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
+
+                                // Set the centers of mass to be within the new meshes
+                                GetComponent<Rigidbody>().centerOfMass = newMesh.bounds.center;
+                                newGO.GetComponent<Rigidbody>().centerOfMass = subHullMesh.bounds.center;
+                            }
+                            var nrig = newGO.GetComponent<Rigidbody>();
+                            nrig.isKinematic = false;
+                            nrig.velocity = -1 * impactForce;
+                        }
+                    
+                    }
+                    */
+
+                    // Set the hull's new mesh back onto this game object
+                    if (meshFilter != null)
+                        meshFilter.mesh = newMesh;
+
+                    // If this GameObject has a MeshCollider, put the new mesh there too
+                    if (meshCollider != null)
+                        meshCollider.sharedMesh = newMesh;
+
+                    // Drop our cached Hull if we're not supposed to keep it around
+                    if (m_CacheOption == CacheOptions.None)
+                        m_Hull = null;
+
+                    // Our calculations are done
+                    m_Calculating = false;
+
+                    mesh = gameObject.GetComponent<MeshFilter>().mesh;
+
+                    //Debug.Log(mesh.vertices.Length);
+                    //Debug.Log(mesh.triangles.Length);
+                    //Debug.Log(mesh.normals.Length);
+                    //Debug.Log(mesh.colors.Length);
+                });
             });
-		});
+        }
+        finally
+        {
+            m_Calculating = false;
+        }
 	}
 	
 	private void InitializeHull()
@@ -311,56 +397,7 @@ public class Meshinator : MonoBehaviour
 
 
     // If this is a fracture, then create a new GameObject for the chunk that broke off
-				if (impactType == ImpactTypes.Fracture)
-				{
-					Mesh subHullMesh = m_Hull.GetSubHullMesh();
-					if (subHullMesh != null)
-					{
-						// Create the new GameObject
-						GameObject newGO = (GameObject)GameObject.Instantiate(gameObject);
-						
-						// Set the new Mesh onto the MeshFilter and MeshCollider
-						MeshFilter newMeshFilter = newGO.GetComponent<MeshFilter>();
-						MeshCollider newMeshCollider = newGO.GetComponent<MeshCollider>();
-						if (newMeshFilter != null)
-							newMeshFilter.mesh = subHullMesh;
-						if (newMeshCollider != null)
-							newMeshCollider.mesh = subHullMesh;
-						
-						// If using convex MeshColliders, it's possible for colliders to overlap right after a
-						// fracture, which causes exponentially more fractures... So, right after a fracture,
-						// temporarily disable impacts to both the old GameObject, and the new one we just created
-						DelayCollisions();
-						Meshinator subHullMeshinator = newGO.GetComponent<Meshinator>();
-						if (subHullMeshinator != null)
-							subHullMeshinator.DelayCollisions();
-
-						// Figure out the approximate volume of our Hull and SubHull meshes. This
-						// will be used to calculate the rigidbody masses (if a rigidbodies are present)
-						// for the old and new GameObjects.
-						if (GetComponent<Rigidbody>() != null && newGO.GetComponent<Rigidbody>() != null)
-						{
-							Vector3 hullSize = newMesh.bounds.size;
-							float hullVolume = hullSize.x * hullSize.y * hullSize.z;
-							
-							Vector3 subHullSize = subHullMesh.bounds.size;
-							float subHullVolume = subHullSize.x * subHullSize.y * subHullSize.z;
-							
-							float totalVolume = hullVolume + subHullVolume;
-							float totalMass = GetComponent<Rigidbody>().mass;
-
-                            GetComponent<Rigidbody>().mass = totalMass * (hullVolume / totalVolume);
-							newGO.GetComponent<Rigidbody>().mass = totalMass * (subHullVolume / totalVolume);
-							
-							// Set the old velocity onto the new GameObject's rigidbody
-							newGO.GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity;
-
-                            // Set the centers of mass to be within the new meshes
-                            GetComponent<Rigidbody>().centerOfMass = newMesh.bounds.center;
-							newGO.GetComponent<Rigidbody>().centerOfMass = subHullMesh.bounds.center;
-						}
-					}
-				}
+				
 				
 
 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using VolumetricLines;
+using UnityEngine.UI;
 
 public class PlayerMovementController : MonoBehaviour {
 
@@ -14,9 +15,11 @@ public class PlayerMovementController : MonoBehaviour {
 	public bool focus = false;
 
     public AudioClip missileAudio;
+    public AudioClip laserAudio;
     public float missilespeed = 10f;
     public float laserspeed = 30f;
-    public float fireRate = 2.0F;
+    //public float fireRate = 2.0f;
+    public float fireRate = 0.5f;
     public float laserFireRate = 0.5F;
     private float nextFire = 0.0F;
     private float laserNextFire = 0.0F;
@@ -25,6 +28,10 @@ public class PlayerMovementController : MonoBehaviour {
 
     public GameObject leftIns;
     public GameObject rightIns;
+
+    public Slider planetSlider;
+    public Image planetIco;
+
 
     public GameObject sun;
 
@@ -36,11 +43,30 @@ public class PlayerMovementController : MonoBehaviour {
     MinimalPlanet selectedTarget = null;
 
     public GameObject front;
+ 
 
     void Start()
     {
         targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
         player = GetComponent<Player>();
+
+        planetSlider.enabled = false;
+        foreach (Transform child in planetSlider.transform)
+            child.gameObject.SetActive(false);
+        planetIco.enabled = false;
+    }
+
+    public void PlanetDestoried(MinimalPlanet pl)
+    {
+        targets.Remove(pl);
+        if (targets.Count <= 0)
+            player.Win();
+
+        focus = false;
+        planetSlider.enabled = false;
+        foreach (Transform child in planetSlider.transform)
+            child.gameObject.SetActive(false);
+        planetIco.enabled = false;
     }
 
     void Update()
@@ -48,12 +74,23 @@ public class PlayerMovementController : MonoBehaviour {
         //Debug.Log(Vector3.Distance(transform.position, sun.transform.position));
 
         if (Input.GetKey(KeyCode.Q)) {
-			focus = false;
+            planetSlider.enabled = false;
+            foreach (Transform child in planetSlider.transform)
+                child.gameObject.SetActive(false);
+            planetIco.enabled = false;
+
+            focus = false;
 			transform.parent = null;
 		}
 
 		if (Input.GetKey(KeyCode.R)) {
-			focus = true;
+            planetSlider.enabled = true;
+            foreach (Transform child in planetSlider.transform)
+                child.gameObject.SetActive(true);
+            planetIco.enabled = true;
+            selectedTarget.GetComponent<life>().imTraget();
+
+            focus = true;
 			transform.parent = selectedTarget.transform;
 //			updateClosestTarget();
 			Quaternion targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
@@ -97,7 +134,8 @@ public class PlayerMovementController : MonoBehaviour {
             }
         }
 		if (target != selectedTarget && focus) {
-			transform.parent = selectedTarget.transform;
+            selectedTarget.GetComponent<life>().imTraget();
+            transform.parent = selectedTarget.transform;
 		}
         target = selectedTarget;
  
@@ -110,10 +148,9 @@ public class PlayerMovementController : MonoBehaviour {
 
     private void freeRoamingMovement()
     {
-      if(Input.GetKey(KeyCode.Space) && Time.time > laserNextFire)
+        if (Input.GetKey(KeyCode.Space) && Time.time > laserNextFire)
         {
-            //AudioSource.PlayClipAtPoint(missileAudio, transform.position);
-
+            AudioSource.PlayClipAtPoint(laserAudio, transform.position);
             laserNextFire = Time.time + laserFireRate;
             GameObject laser_tmp = (GameObject)Instantiate(laser, leftIns.transform.position, Quaternion.LookRotation(transform.forward));
             GameObject laser_tmp2 = (GameObject)Instantiate(laser, rightIns.transform.position, Quaternion.LookRotation(transform.forward));
@@ -203,7 +240,11 @@ public class PlayerMovementController : MonoBehaviour {
             AudioSource.PlayClipAtPoint(missileAudio, transform.position);
 
             nextFire = Time.time + fireRate;
-			GameObject mmissile = (GameObject)Instantiate(missile, transform.position - transform.up * 2, Quaternion.LookRotation(transform.up));
+
+
+
+            GameObject mmissile = (GameObject)Instantiate(missile, transform.position - transform.up * 2, Quaternion.LookRotation(target.transform.position - transform.position));
+            mmissile.transform.Rotate(Vector3.right * 90);
 
             mmissile.GetComponent<Rigidbody>().velocity = transform.forward * missilespeed;
         }

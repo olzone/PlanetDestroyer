@@ -669,12 +669,14 @@ public class MinimalPlanet : MonoBehaviour {
         Debug.Log("LP: " + (planet_radii - 1.8f * terrain_height));
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.AddComponent<Rigidbody>().isKinematic = true;
-        sphere.name = "Core";
+        sphere.name = "core";
         sphere.transform.localScale = new Vector3(2*(planet_radii - 1.8f * terrain_height), 2 * (planet_radii - 1.8f * terrain_height), 2 * (planet_radii - 1.8f * terrain_height));
         sphere.transform.position = transform.position;
         sphere.transform.SetParent(gameObject.transform);
+        sphere.GetComponent<Renderer>().material.color = Color.red;
+        sphere.AddComponent<MeshCollider>();
         sphere.AddComponent<Meshinator>();
-        //sphere.AddComponent<MeshCollider>();
+        sphere.GetComponent<SphereCollider>().enabled = false;
     }
 
     void Start ()

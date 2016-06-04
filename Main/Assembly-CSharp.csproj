@@ -71,6 +71,7 @@
      <Compile Include="Assets\VolumetricLines\Scripts\VolumetricLineBehavior.cs" />
      <Compile Include="Assets\VolumetricLines\Scripts\VolumetricLineStripBehavior.cs" />
      <Compile Include="Assets\VolumetricLines\Scripts\VolumetricMultiLineBehavior.cs" />
+     <Compile Include="Assets\life.cs" />
      <None Include="Assets\Standard Assets\Effects\GlassRefraction\Shaders\GlassStainedBumpDistort.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets\Effects\ImageEffects\Shaders\NoiseEffectShaderRGB.shader" />
