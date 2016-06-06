@@ -50,8 +50,6 @@ public class life : MonoBehaviour {
             GameObject e = (GameObject)Instantiate(emplision, transform.position, Quaternion.identity);
             Destroy(e, 2);
             Destroy(gameObject.transform.root.gameObject, 1);
-        
-
-
+    
     }
 }
