@@ -55,6 +55,7 @@
      <Compile Include="Assets\Player.cs" />
      <Compile Include="Assets\Scripts\MainMenuPlanet.cs" />
      <Compile Include="Assets\Scripts\MinimalPlanet.cs" />
+     <Compile Include="Assets\Scripts\PlanetGenerator.cs" />
      <Compile Include="Assets\Scripts\PlayerMovementController.cs" />
      <Compile Include="Assets\Scripts\Prewarm.cs" />
      <Compile Include="Assets\Scripts\QuitGameScript.cs" />
