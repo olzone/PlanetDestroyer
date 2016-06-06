@@ -442,7 +442,7 @@ public class MinimalPlanet : MonoBehaviour {
             _filter.mesh.normals = normals_chunks;
             _filter.mesh.colors = colors_chunks;
             obj.transform.SetParent(gameObject.transform);
-			
+			obj.transform.localPosition =Vector3.zero;
 			var rig = obj.AddComponent<Rigidbody>();
 			rig.isKinematic = true;
 			obj.AddComponent<Meshinator>();
@@ -681,17 +681,21 @@ public class MinimalPlanet : MonoBehaviour {
 
     void Start ()
     {
-        if (!parameters_correct()) return;
-        convert_parameters();
-        load_flora();
-        planet_temperature = get_planet_temperature(false);
-        Debug.Log("planet temperature " + planet_temperature + "K");
-        subdivision_surfaces_planet();
-        create_mesh();
-        addCore();
-        initialize_orbit();
-        if(flora_enabled) populate_planet();
+        
     }
+
+	public void Start2() {
+		if (!parameters_correct()) return;
+		convert_parameters();
+		load_flora();
+		planet_temperature = get_planet_temperature(false);
+		Debug.Log("planet temperature " + planet_temperature + "K");
+		subdivision_surfaces_planet();
+		create_mesh();
+		addCore();
+		initialize_orbit();
+		if(flora_enabled) populate_planet();
+	}
 	
 	// Update is called once per frame
 	void Update () {

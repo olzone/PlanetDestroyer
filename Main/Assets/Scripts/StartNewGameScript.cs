@@ -7,5 +7,5 @@ public class StartNewGameScript : MonoBehaviour {
 	public void ChangeScene () {
 		Application.LoadLevel("Proc_planet");
 	}
-		
+ 		
 }

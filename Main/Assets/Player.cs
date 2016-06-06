@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     public Color flashColour = new Color(1f, 0f, 0f, 1f);     // The colour the damageImage is set to, to flash.
     public Color deathColour = new Color(1f, 1f, 1f, 1f);
     public AudioClip damageClip;
-
+	public Canvas postGameMenu;
 
     bool isDead;                                                // Whether the player is dead.
     bool damaged;                                               // True when the player gets damaged.
@@ -50,6 +50,11 @@ public class Player : MonoBehaviour
         playerAudio = GetComponent<AudioSource>();
     }
 
+
+	IEnumerator goToMainMenu() {
+		yield return new WaitForSeconds(5f);
+		Application.LoadLevel ("MainMenu");
+	}
     // Update is called once per frame
     void Update()
     {
@@ -127,6 +132,7 @@ public class Player : MonoBehaviour
         // Turn off the movement and shooting scripts.
         playerMovement.enabled = false;
         //playerShooting.enabled = false;
+		StartCoroutine(goToMainMenu());
     }
 
     public void Win()
