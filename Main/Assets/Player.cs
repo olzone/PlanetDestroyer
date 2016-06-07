@@ -138,5 +138,6 @@ public class Player : MonoBehaviour
     public void Win()
     {
         winTxt.enabled = true;
+		StartCoroutine(goToMainMenu());
     }
 }

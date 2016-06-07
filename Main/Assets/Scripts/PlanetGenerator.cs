@@ -22,6 +22,7 @@ public class PlanetGenerator : MonoBehaviour {
 		planets [1] = planet2;
 		planets [2] = planet3;
 		int curr_min_dist = min_distance_from_sun;
+		List<MinimalPlanet> targets = new List<MinimalPlanet> ();
 		for(int i = 1; i<= PlayerPrefs.GetInt("numberOfPlanets"); i++) {	
 			Vector3 initialRandomPoint = Random.onUnitSphere;
 			int actualRay = Random.Range (curr_min_dist, curr_min_dist + max_distance_between_planets);
@@ -38,9 +39,10 @@ public class PlanetGenerator : MonoBehaviour {
 			//((life)newPlanet).player = player;
 			life l = newPlanet.GetComponents<life>()[0];
 			l.player = player;
-			l.slider = Instantiate (planet_hp);
+			l.slider = planet_hp;
 			curr_min_dist = (actualRay + min_distance_between_planets)*(actualRay + min_distance_between_planets);
+			targets.Add (newPlanet);
 		}
-		PlayerMovementController.targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
+		PlayerMovementController.targets = targets;
 	}
 }

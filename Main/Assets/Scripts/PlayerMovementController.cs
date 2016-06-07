@@ -4,7 +4,6 @@ using VolumetricLines;
 using UnityEngine.UI;
 
 public class PlayerMovementController : MonoBehaviour {
-
     public MinimalPlanet target;
     public static List<MinimalPlanet> targets = null;
     public float freeRoamingRotationSpeed;
@@ -47,7 +46,6 @@ public class PlayerMovementController : MonoBehaviour {
 
     void Start()
     {
-        targets = new List<MinimalPlanet>(Resources.FindObjectsOfTypeAll<MinimalPlanet>());
         player = GetComponent<Player>();
 
         planetSlider.enabled = false;
