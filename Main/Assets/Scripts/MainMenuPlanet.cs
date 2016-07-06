@@ -6,7 +6,7 @@ public class MainMenuPlanet : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Update () {
-		transform.position.Set(6,0,0);
+		//transform.position.Set(6,0,0);
 	}
 
 }
